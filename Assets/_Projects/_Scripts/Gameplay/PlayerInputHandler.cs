@@ -9,9 +9,9 @@ public class PlayerInputHandler : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if (hit.transform.GetComponent<BoltObject>() != null)
+                if (hit.transform.TryGetComponent<BoltObject>(out var boltObject))
                 {
-                    
+                    boltObject.OnBoltSelected();
                 }
             }
         }
