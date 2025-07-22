@@ -11,7 +11,7 @@ public class PlayerInputHandler : MonoBehaviour
             {
                 if (hit.transform.TryGetComponent<BoltObject>(out var boltObject))
                 {
-                    boltObject.OnBoltSelected();
+                    SortManager.Instance.OnBoltSelected(boltObject);
                 }
             }
         }

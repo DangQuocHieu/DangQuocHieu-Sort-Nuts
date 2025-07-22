@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum GameMessageType
 {
+    OnLevelCompleted,
 }
 
 public class Message
