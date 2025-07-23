@@ -25,6 +25,9 @@ public class BoltObject : MonoBehaviour
     [SerializeField] private MoveConfig _moveConfig;
     [SerializeField] private RotateConfig _rotateConfig;
 
+    [Header("Complete Particle")]
+    [SerializeField] private ParticleSystem _completeParticleEffect;
+
     void Start()
     {
         SetUpNutObject();
@@ -143,6 +146,7 @@ public class BoltObject : MonoBehaviour
         _isCompleted = _nutObjects.Count == _maxNutCount;
         if (_isCompleted)
         {
+            _completeParticleEffect.Play();
             GetComponent<BoxCollider>().enabled = false;
             SortManager.Instance.OnBoltCompleted(this);
             MessageManager.SendMessage(new Message(GameMessageType.OnBoltCompleted));
