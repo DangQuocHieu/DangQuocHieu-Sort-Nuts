@@ -5,7 +5,8 @@ using UnityEngine;
 public enum GameMessageType
 {
     OnLevelCompleted,
-    OnBoltCompleted
+    OnBoltCompleted,
+    OnNutMoved
 }
 
 public class Message

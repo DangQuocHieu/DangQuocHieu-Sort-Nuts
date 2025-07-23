@@ -120,6 +120,7 @@ public class BoltObject : MonoBehaviour
         {
             yield return _moveConfig.ExecuteCoroutine(_nutOnTop.transform, _nutSelectedPoint.position);
         }
+        MessageManager.SendMessage(new Message(GameMessageType.OnNutMoved));
         yield return _moveConfig.ExecuteCoroutine(_nutOnTop.transform, another.NutSelectedPoint.position);
         _rotateConfig.Execute(_nutOnTop.transform);
         yield return _moveConfig.ExecuteCoroutine(_nutOnTop.transform, another.CalculateTopPosition());

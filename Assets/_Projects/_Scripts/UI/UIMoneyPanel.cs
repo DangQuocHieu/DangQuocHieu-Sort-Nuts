@@ -25,7 +25,7 @@ public class UIMoneyPanel : MonoBehaviour, IMessageHandle
         switch (message.type)
         {
             case GameMessageType.OnBoltCompleted:
-                _animator.Play(_gainMoneyState);
+                _animator.Play(_gainMoneyState, -1, 0f);
                 break;
         }
     }

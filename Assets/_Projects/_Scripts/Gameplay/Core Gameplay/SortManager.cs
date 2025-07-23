@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class SortManager : Singleton<SortManager>
@@ -41,16 +43,18 @@ public class SortManager : Singleton<SortManager>
         _currentNutObject = null;
     }
 
-    public void OnBoltCompleted(BoltObject completedBolt)
+    public async void OnBoltCompleted(BoltObject completedBolt)
     {
         _allBoltObjects.Remove(completedBolt);
         for (int i = 0; i < _allBoltObjects.Count; i++)
         {
             if (_allBoltObjects[i].NutObjects.Count != 0) return;
         }
+        await Task.Delay(TimeSpan.FromSeconds(0.3f));
         MessageManager.SendMessage(new Message(GameMessageType.OnLevelCompleted));
-        Debug.Log("LEVEL COMPLETE");
     }
+
+    
 
 
 }
