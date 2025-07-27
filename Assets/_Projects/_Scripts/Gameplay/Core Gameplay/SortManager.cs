@@ -7,12 +7,12 @@ using UnityEngine;
 public class SortManager : Singleton<SortManager>
 {
     [SerializeField] private List<BoltObject> _allBoltObjects = new List<BoltObject>();
+    public List<BoltObject> AllBoltObjects => _allBoltObjects;
     [SerializeField] private NutObject _currentNutObject;
     [SerializeField] private BoltObject _currentBoltObject;
 
-    protected override void Awake()
+    public void Init()
     {
-        base.Awake();
         _allBoltObjects = GetComponentsInChildren<BoltObject>().ToList();
     }
 
@@ -54,7 +54,7 @@ public class SortManager : Singleton<SortManager>
         MessageManager.SendMessage(new Message(GameMessageType.OnLevelCompleted));
     }
 
-    
+
 
 
 }

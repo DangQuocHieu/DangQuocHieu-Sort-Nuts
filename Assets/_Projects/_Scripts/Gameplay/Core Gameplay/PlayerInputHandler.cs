@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : Singleton<PlayerInputHandler>
 {
@@ -7,9 +8,9 @@ public class PlayerInputHandler : Singleton<PlayerInputHandler>
     void Update()
     {
         if (!_inputEnabled) return;
-        if (Input.GetMouseButtonDown(0))
+        if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Pointer.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 if (hit.transform.TryGetComponent<BoltObject>(out var boltObject))

@@ -16,8 +16,7 @@ public class AudioManager : PersistentSingleton<AudioManager>, IMessageHandle
     [SerializeField] private Audio[] _musicAudios;
     private AudioSource _musicSource;
 
-    private float previousPlayTime = 0f;
-    [SerializeField] private float sfxCooldown = 0.08f;
+    private bool _isMuted = false;
 
     protected override void Awake()
     {
@@ -114,6 +113,7 @@ public class AudioManager : PersistentSingleton<AudioManager>, IMessageHandle
 
     public void PlaySFX(AudioName name)
     {
+        if (_isMuted) return;
         if (!_sfxAudioSourcePool.ContainsKey(name)) return;
 
         AudioSource source = _sfxAudioSourcePool[name];
@@ -154,6 +154,12 @@ public class AudioManager : PersistentSingleton<AudioManager>, IMessageHandle
                 PlaySFX(AudioName.LevelCompleteSFX);
                 break;
         }
+    }
+
+    public bool ToggleVolume()
+    {
+        _isMuted = !_isMuted;
+        return _isMuted;
     }
 
 }

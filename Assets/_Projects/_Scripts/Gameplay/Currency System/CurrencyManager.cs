@@ -1,9 +1,14 @@
 using UnityEngine;
 
-public class CurrencyManager : Singleton<CurrencyManager>, IMessageHandle
+public class CurrencyManager : PersistentSingleton<CurrencyManager>, IMessageHandle, ISaveable
 {
     [SerializeField] private int _totalMoney;
     public int TotalMoney => _totalMoney;
+
+    void Start()
+    {
+        _totalMoney = DataManager.Instance.PlayerData.TotalMoney;
+    }
 
     void OnEnable()
     {
@@ -28,5 +33,15 @@ public class CurrencyManager : Singleton<CurrencyManager>, IMessageHandle
                 AddMoney(1);
                 break;
         }
+    }
+
+    public void SaveData(PlayerData data)
+    {
+        data.TotalMoney = _totalMoney;
+    }
+
+    public void LoadData(PlayerData data)
+    {
+        _totalMoney = data.TotalMoney;
     }
 }

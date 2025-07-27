@@ -1,9 +1,10 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameplayScreenHUD : MonoBehaviour
+public class GameplayScreenHUD : MonoBehaviour, IMessageHandle
 {
     [SerializeField] private TextMeshProUGUI _moneyText;
     [SerializeField] private Button _volumeToggleButton;
@@ -14,19 +15,15 @@ public class GameplayScreenHUD : MonoBehaviour
     [SerializeField] private Sprite _volumeOnSprite;
     [SerializeField] private Sprite _volumeOffSprite;
 
-
-
     void OnEnable()
     {
+        MessageManager.AddSubscriber(GameMessageType.OnLevelStart, this);
         AddButtonListener();
     }
 
-    private void Start()
-    {
-        UpdateLevelText();
-    }
     void OnDisable()
     {
+        MessageManager.RemoveSubscriber(GameMessageType.OnLevelStart, this);
         RemoveButtonListener();
     }
 
@@ -43,19 +40,16 @@ public class GameplayScreenHUD : MonoBehaviour
         }
 
     }
-
-    private void UpdateLevelText()
-    {
-        if (LevelManager.Instance != null)
-        {
-            _levelText.text = "Level " + (LevelManager.Instance.CurrentLevelIndex + 1);
-        }
-    }
     private void AddButtonListener()
     {
         _volumeToggleButton.onClick.AddListener(() =>
         {
-
+            bool isMuted = AudioManager.Instance.ToggleVolume();
+            if (isMuted)
+            {
+                _volumeToggleButton.image.sprite = _volumeOffSprite;
+            }
+            else _volumeToggleButton.image.sprite = _volumeOnSprite;
         });
         _restartButton.onClick.AddListener(() =>
         {
@@ -67,5 +61,20 @@ public class GameplayScreenHUD : MonoBehaviour
     {
         _volumeToggleButton.onClick.RemoveAllListeners();
         _restartButton.onClick.RemoveAllListeners();
+    }
+
+    public void Handle(Message message)
+    {
+        switch (message.type)
+        {
+            case GameMessageType.OnLevelStart:
+                OnLevelStart((int)message.data[0]);
+                break;
+        }
+    }
+
+    private void OnLevelStart(int currentLevelIndex)
+    {
+        _levelText.text = "Level " + (currentLevelIndex + 1).ToString();
     }
 }

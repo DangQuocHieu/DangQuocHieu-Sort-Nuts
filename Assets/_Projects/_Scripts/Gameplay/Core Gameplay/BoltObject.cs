@@ -9,6 +9,7 @@ public class BoltObject : MonoBehaviour
     public int MaxNutCount => _maxNutCount;
     [SerializeField] private Stack<NutObject> _nutObjects = new Stack<NutObject>();
     public Stack<NutObject> NutObjects => _nutObjects;
+
     [SerializeField] private float _initialNutPositionY = 0.8f;
     [SerializeField] private float _yOffset = 0.2f;
     [SerializeField] private Transform _nutObjectContainer;
@@ -28,6 +29,7 @@ public class BoltObject : MonoBehaviour
     [Header("Complete Particle")]
     [SerializeField] private ParticleSystem _completeParticleEffect;
 
+
     void Start()
     {
         SetUpNutObject();
@@ -35,25 +37,34 @@ public class BoltObject : MonoBehaviour
 
     private void SetUpNutObject()
     {
+        float spawnPositionY = _initialNutPositionY - _yOffset * (_maxNutCount - _initialNutObjectData.Count);
         for (int i = 0; i < Mathf.Min(_initialNutObjectData.Count, _maxNutCount); i++)
         {
-            Vector3 spawnPosition = new Vector3(transform.position.x, _initialNutPositionY + i * _yOffset, transform.position.z);
+            Vector3 spawnPosition = new Vector3(transform.position.x, spawnPositionY - i * _yOffset, transform.position.z);
             NutObject nutObject = NutObjectSpawner.Instance.GetNutObject(spawnPosition, _nutObjectContainer);
             nutObject.Initialize(_initialNutObjectData[i].NutColor, _initialNutObjectData[i].IsHidden);
-            _nutObjects.Push(nutObject);
+        }
+
+        NutObject[] _allNutObjects = _nutObjectContainer.GetComponentsInChildren<NutObject>();
+        for (int i = _allNutObjects.Length - 1; i >= 0; i--)
+        {
+            _nutObjects.Push(_allNutObjects[i]);
         }
     }
 
+
     public Vector3 CalculateTopPosition()
     {
-        return new Vector3(transform.position.x, _initialNutPositionY + (_nutObjects.Count - 1) * _yOffset, transform.position.z);
+        return new Vector3(transform.position.x, _initialNutPositionY - (_maxNutCount - _nutObjects.Count) * _yOffset, transform.position.z);
     }
 
     public void SelectNutOnTop()
     {
+
         _moveConfig.Execute(_nutOnTop.transform, _nutSelectedPoint.position);
         _rotateConfig.Execute(_nutOnTop.transform);
         // _nutOnTop.transform.position = _nutSelectedPoint.position;
+        MessageManager.SendMessage(new Message(GameMessageType.OnNutSelected, new object[] { this }));
     }
 
     public bool HasEnoughNuts()
@@ -99,6 +110,10 @@ public class BoltObject : MonoBehaviour
             while (_nutObjects.Count > 0 && _nutOnTop.NutColor == current)
             {
                 yield return MoveNutToAnotherBolt(another);
+                if (_nutObjects.Count > 0 && _nutOnTop.IsHidden)
+                {
+                    ShowHiddenColor(); break;
+                }
             }
         }
         else
@@ -107,6 +122,10 @@ public class BoltObject : MonoBehaviour
             while (_nutObjects.Count > 0 && _nutOnTop.NutColor == current && !another.HasEnoughNuts())
             {
                 yield return MoveNutToAnotherBolt(another);
+                if (_nutObjects.Count > 0 && _nutOnTop.IsHidden)
+                {
+                    ShowHiddenColor(); break;
+                }
             }
         }
     }
@@ -130,9 +149,8 @@ public class BoltObject : MonoBehaviour
         SortManager.Instance.ResetCurrentObject();
         another.CheckCompleted();
 
-        //Show Hidden Color
-        ShowHiddenColor();
         PlayerInputHandler.Instance.EnableInput();
+        MessageManager.SendMessage(new Message(GameMessageType.OnNutSorted));
     }
 
     public void CheckCompleted()
@@ -157,6 +175,7 @@ public class BoltObject : MonoBehaviour
     private void ShowHiddenColor()
     {
         if (HasNoNuts()) return;
+
         _nutOnTop.ShowHiddenColor();
     }
 

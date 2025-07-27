@@ -1,4 +1,4 @@
 public enum NutColor
 {
-    Red, Purple
+    Red, Purple, Blue, Green, Orange, Yellow
 }

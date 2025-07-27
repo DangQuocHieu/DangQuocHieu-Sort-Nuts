@@ -6,7 +6,10 @@ public enum GameMessageType
 {
     OnLevelCompleted,
     OnBoltCompleted,
-    OnNutMoved
+    OnNutMoved,
+    OnLevelStart,
+    OnNutSelected,
+    OnNutSorted
 }
 
 public class Message
